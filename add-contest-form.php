@@ -100,6 +100,19 @@ function psc_process_photo_contest_submission() {
 		!empty( $desc ) &&
 		!empty( $file_name ) ) {
 
+		// fields values are all present
+
+		//assign the form values to variables
+		$post_entrantName = htmlentities(trim($_POST['entrantName']));
+		$post_age = htmlentities(trim($_POST['age']));
+		$post_title = htmlentities(trim($_POST['title']));
+		$post_desc = htmlentities(trim($_POST['desc']));
+		$post_image = htmlentities(trim($_FILES["image"]["name"]));
+
+		//create post, upload image, and attach image to the post
+		psc_create_new_post($post_entrantName, $post_age, $post_title, $post_desc, $post_image);
+
+
 		//Redirect browser back to photo contest submission page
 		$redirectaddress = ( empty( $_POST[ '_wp_http_referer' ] ) ? site_url() :
 											   $_POST[' _wp_http_referer'] );
