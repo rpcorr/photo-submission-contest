@@ -9,7 +9,6 @@ Author URI: http://www.ronancorr.com
 License: GPLv2
 */
 
-
 //Set up custom post type - Photo Contests
 function photo_contest_submission_post_type() {
 	$labels = array(
@@ -161,4 +160,21 @@ function psc_photo_add_columns( $columns ) {
 	$columns[ 'photo_submission_entrant_age' ] = 'Entrant Age';
     
     return $columns;
+}
+
+//populate the custom fields with data on the photo_ contests post type page
+add_action( 'manage_posts_custom_column', 'psc_photo_populate_columns' );
+
+function psc_photo_populate_columns( $column ) {
+    
+    if ( 'photo_submission_entrant_name' == $column ) {
+        $photo_submission_entrant_name = esc_html( get_post_meta( get_the_ID(), 'entrantName', true ) );
+        
+        echo $photo_submission_entrant_name;
+    
+    } elseif ( 'photo_submission_entrant_age' == $column ) {
+        $photo_submission_entrant_age = get_post_meta( get_the_ID(), 'entrantAge', true );
+        
+        echo $photo_submission_entrant_age;
+    } 
 }
