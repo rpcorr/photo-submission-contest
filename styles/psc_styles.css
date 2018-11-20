@@ -1,0 +1,7 @@
+#psc_photo_submit_form .red {
+	color:#ff0000;
+}
+
+#psc_photo_submit_form input[type=text], #psc_photo_submit_form textarea {
+	width:100%;
+}
