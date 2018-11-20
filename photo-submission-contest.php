@@ -42,7 +42,7 @@ function photo_contest_submission_post_type() {
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
-        'supports'           => array( 'title', 'editor', 'thumbnail' ),
+        'supports'           => array( 'title', 'thumbnail' ),
 		'taxonomies' 		 => array( '' ),
     );
 	register_post_type( 'photo_contests', $args );
@@ -87,3 +87,46 @@ function my_rewrite_flush() {
     flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'my_rewrite_flush' );
+
+//add custom fields to photo contests post type entry page
+add_action( 'admin_init', 'psc_admin_init' );
+
+function psc_admin_init() {
+    add_meta_box( 'psc_details_meta_box',
+                  'Photo Submission Details',
+                  'psc_display_review_details_meta_box',
+                  'photo_contests', 'normal', 'high' );
+}
+
+
+//this function is called from the psc_admin_init function
+function psc_display_review_details_meta_box( $photo_contest ) {
+	
+	//Retrieve current entrant and their age based on contest ID
+    
+    $entrantName = esc_html( get_post_meta( $photo_contest->ID, 'entrantName', true) );
+    
+    $entrantAge = intval( get_post_meta( $photo_contest->ID, 'entrantAge', true) );
+
+    $photoDescription = esc_html( get_post_meta( $photo_contest->ID, 'photoDescription', true) );
+	
+
+?>
+
+	<div style="display: block; margin-bottom:15px;">
+  		<label for="entrantName" id="entrantNameLabel">Entrant Name:</label>
+  		<input type="text" maxlength="50" id="entrantName" name="entrantName" value="<?php echo $entrantName; ?>" style="width:85%" />
+	</div>	
+
+	<div style="display: block; margin-bottom:15px;">
+  		<label for="entrantAge" id="entrantAgeLabel">Entrant Age:</label>
+  		<input type="text" size="3" maxlength="2" id="entrantAge" name="entrantAge" value="<?php echo $entrantAge; ?>" />
+	</div>	
+
+	<div style="display: block;">
+  		<label for="photoDescription" id="photoDescriptionlabel">Photo Description:</label>
+  		<textarea cols="2" rows="10" id="photoDescription" name="photoDescription" style="width:100%"><?php echo $photoDescription; ?></textarea>
+	</div>	
+	
+<?php	
+}
