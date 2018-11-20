@@ -50,6 +50,31 @@ function photo_contest_submission_post_type() {
 
 add_action('init', 'photo_contest_submission_post_type');
 
+//Create a custom taxonomy for Contest Post Type
+function create_photo_contest_taxonomies () {	
+	register_taxonomy(
+        'photo_contests_name',
+        'photo_contests',
+        array(
+            'labels' => array(
+                'name' => 'Contest Name',
+                'add_new_item' => 'Add New Contest Name',
+                'new_item_name' => 'New Contest Name'
+            ),
+            'show_ui' => true,
+			'show_admin_column' => true,
+            'show_tagcloud' => false,
+            'hierarchical' => false,
+			'update_count_callback' => '_update_post_term_count',
+			'query_var' => true,
+			'rewrite' => array( 'slug' => 'contest-name'),
+			
+        )
+    );
+}
+
+add_action( 'init', 'create_photo_contest_taxonomies', 0 );
+
 function my_rewrite_flush() {
     // First, we "add" the custom post type via the above written function.
     // Note: "add" is written with quotes, as CPTs don't get added to the DB,
