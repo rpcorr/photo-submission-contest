@@ -64,7 +64,7 @@ function create_photo_contest_taxonomies () {
             'show_ui' => true,
 			'show_admin_column' => true,
             'show_tagcloud' => false,
-            'hierarchical' => false,
+            'hierarchical' => true,
 			'update_count_callback' => '_update_post_term_count',
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'contest-name'),
@@ -127,6 +127,6 @@ function psc_display_review_details_meta_box( $photo_contest ) {
   		<label for="photoDescription" id="photoDescriptionlabel">Photo Description:</label>
   		<textarea cols="2" rows="10" id="photoDescription" name="photoDescription" style="width:100%"><?php echo $photoDescription; ?></textarea>
 	</div>	
-	
+
 <?php	
 }
