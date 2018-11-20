@@ -153,3 +153,12 @@ function psc_contest_fields( $photo_contest_id, $photo_contest ) {
         }
     }
 }
+
+//Add fields - Entrant Name, and Entrant Age to photo_contests post types page
+add_filter( 'manage_edit-photo_contests_columns', 'psc_photo_add_columns' );
+function psc_photo_add_columns( $columns ) {
+	$columns[ 'photo_submission_entrant_name' ] = 'Entrant Name';
+	$columns[ 'photo_submission_entrant_age' ] = 'Entrant Age';
+    
+    return $columns;
+}
