@@ -68,7 +68,6 @@ function create_photo_contest_taxonomies () {
 			'update_count_callback' => '_update_post_term_count',
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'contest-name'),
-			
         )
     );
 }
@@ -129,4 +128,28 @@ function psc_display_review_details_meta_box( $photo_contest ) {
 	</div>	
 
 <?php	
+}
+
+//register a function that will be called when custom post types fields are saved to the database:
+add_action( 'save_post', 'psc_contest_fields', 10, 2 );
+
+//Add an implementation for the psc_contest_fields function, defined in the previous add_action call:
+function psc_contest_fields( $photo_contest_id, $photo_contest ) {
+    
+    //Check post type for photo_contests
+    if( $photo_contest->post_type == 'photo_contests' ) {
+        
+        //Store data in post meta table if present in post data
+        if ( isset( $_POST[ 'entrantName' ] ) && $_POST[ 'entrantName' ] != '' ) {
+            update_post_meta( $photo_contest_id, 'entrantName', $_POST[ 'entrantName' ] );
+        }
+        
+        if ( isset( $_POST[ 'entrantAge' ] ) && $_POST[ 'entrantAge' ] != '' ) {
+            update_post_meta( $photo_contest_id, 'entrantAge', $_POST[ 'entrantAge' ] );
+        }
+
+        if ( isset( $_POST[ 'photoDescription' ] ) && $_POST[ 'photoDescription' ] != '' ) {
+            update_post_meta( $photo_contest_id, 'photoDescription', $_POST[ 'photoDescription' ] );
+        }
+    }
 }
