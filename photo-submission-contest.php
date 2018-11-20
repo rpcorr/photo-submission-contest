@@ -162,7 +162,7 @@ function psc_photo_add_columns( $columns ) {
     return $columns;
 }
 
-//populate the custom fields with data on the photo_ contests post type page
+//populate the custom fields with data on the photo contests post type page
 add_action( 'manage_posts_custom_column', 'psc_photo_populate_columns' );
 
 function psc_photo_populate_columns( $column ) {
