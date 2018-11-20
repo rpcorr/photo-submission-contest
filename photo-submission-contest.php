@@ -9,6 +9,10 @@ Author URI: http://www.ronancorr.com
 License: GPLv2
 */
 
+/*******************************************
+  ADMIN SIDE
+/*******************************************/
+
 //Set up custom post type - Photo Contests
 function photo_contest_submission_post_type() {
 	$labels = array(
@@ -178,3 +182,12 @@ function psc_photo_populate_columns( $column ) {
         echo $photo_submission_entrant_age;
     } 
 }
+
+//register the style sheet, styles.css, located in /styles
+function psc_photo_submit_form_stylesheet() { 
+	wp_enqueue_style('psc_photo_submit_form', plugins_url('/styles/psc_styles.css', __FILE__)); 
+}  
+
+add_action('wp_enqueue_scripts', 'psc_photo_submit_form_stylesheet');
+
+include ('add-contest-form.php');
