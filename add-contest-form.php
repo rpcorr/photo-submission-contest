@@ -62,11 +62,11 @@ function psc_photo_submit_uploader_callback( $atts ) {
 		Your Photo: <input type="file" name="image" value="<?php echo $image; ?> size="25" /><br/>
 		<!-- Post variable to indicate user-submission items -->
 		<input type="hidden" name="psc_photo_contest_submission" value="1" />
-		<!--Re-type the following text<br/>
+		Re-type the following text<br/>
                         
                         <img src="' . plugins_url(
                                 'EasyCaptcha/easycaptcha.php', __FILE__ ) . '" /> <br/>
-		<input type="text" name="contest_submission_captcha" />-->
+		<input type="text" name="contest_submission_captcha" />
 		
 		<input type="submit" name="submit" value="Submit" class="button-primary" />
 
@@ -121,17 +121,63 @@ function psc_process_photo_contest_submission() {
 		//need to get contest taxomony id so it can be assigned to post
 		$post_photo_contest_id = $_POST[ 'photo_contest_id' ];
 
-		//create post, upload image, and attach image to the post
-		psc_create_new_post($post_photo_contest_id, $post_entrantName, $post_age, $post_title, $post_desc, $post_image);
+		//initiate the valid tag to false.  This is set to true when the captcha value is true.
+		$valid = false;
+					
+		//Check if captcha text was entered
+        if ( empty( $_POST[ 'contest_submission_captcha' ] ) ) {
+			
+            $abortmessage = 'Captcha code is missing. Go back and provide the code.';
+            wp_die( $abortmessage );
+            exit;
+			
+        } else {
+			
+            //Check if captcha cookie is set
+            if ( isset( $_COOKIE[ 'Captcha' ] ) ) {
+                list( $hash, $time ) = explode( '.', $_COOKIE[ 'Captcha' ] ); // bug: undefined index error fix: $_COOKIE[ 'captcha' ] to  $_COOKIE[ 'Captcha' ]  Captcha is case senstive
 
+                //The code under the md5's first section needs to match
+                //the code entered in easycaptcha.php		
 
-		//Redirect browser back to photo contest submission page
-		$redirectaddress = ( empty( $_POST[ '_wp_http_referer' ] ) ? site_url() :
-											   $_POST[' _wp_http_referer'] );
+                if ( md5( 'HDBHAYYEJKPWIKJHDD' . $_REQUEST[ 'contest_submission_captcha' ] .
+                        $_SERVER[ 'REMOTE_ADDR'] . $time ) != $hash ) {
 
-		wp_redirect( add_query_arg( 'addreviewmessage', '1', $redirectaddress ) );
+                    $abortmessage = 'Captcha code is wrong. Go back and try to get right ';
+                    $abortmessage .= 'to get a new captcha code.';
+                    wp_die( $abortmessage );
+                    exit;                
+                } elseif ( (time() - 5 * 60 ) > $time ) {
+                    $abortmessage = 'Captcha timed out.  Please go back, ';
+                    $abortmessage .= 'reload the page and submit again.';
+                    wp_die( $abortmessage );
+                    exit;
+                } else {
+                    // Set flag to accept and store user input
+                    $valid = true;
+                }
+				
+            } else {
+               $abortmessage = "No captcha cookie given.  Make sure cookies are enabled.";
+               wp_die( $abortmessage );
+               exit;
+            }
+        }
 		
-		exit;
+		if ($valid == true) {
+
+			//create post, upload image, and attach image to the post
+			psc_create_new_post($post_photo_contest_id, $post_entrantName, $post_age, $post_title, $post_desc, $post_image);
+
+
+			//Redirect browser back to photo contest submission page
+			$redirectaddress = ( empty( $_POST[ '_wp_http_referer' ] ) ? site_url() :
+												   $_POST[' _wp_http_referer'] );
+
+			wp_redirect( add_query_arg( 'addreviewmessage', '1', $redirectaddress ) );
+			
+			exit;
+		}
 
 	} else {
 
