@@ -190,4 +190,7 @@ function psc_photo_submit_form_stylesheet() {
 
 add_action('wp_enqueue_scripts', 'psc_photo_submit_form_stylesheet');
 
+/*******************************************
+  CLIENT SIDE
+/*******************************************/
 include ('add-contest-form.php');
