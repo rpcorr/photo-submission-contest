@@ -34,11 +34,20 @@ function psc_photo_submit_uploader_callback( $atts ) {
 		//put back in the carriage returns
 		$desc = str_replace( 'br/', "\n", $desc);
 
-		$term = get_term_by('name', '2018 Winter Contest', 'photo_contests_name');
+		//get the contests types taxomony
+		$contests_types = get_terms( 'photo_contests_name', array( 'orderby' => 'name', 'hide_empty' => 0 ) );
+
+	 	//loop through all the contests types
+	 	foreach ( $contests_types as $contests_type ) {
+
+	 		// retrieve contests type id by the current contest name
+	 		if ( $contests_type->name == $photo_contest_name )
+	 			$photo_contest_id = $contests_type->term_id;
+		}
 		
 		$theform .= '
 
-		<input type="hidden" name="photo_contest_name" value="' . $photo_contest_name . '">
+		<input type="hidden" name="photo_contest_id" value="' . $photo_contest_id . '">
 
 		Entrant Name:<br/>
 		<input type="text" name="entrantName" value="' . $entrantName . '" /><br/>
@@ -109,8 +118,11 @@ function psc_process_photo_contest_submission() {
 		$post_desc = htmlentities(trim($_POST['desc']));
 		$post_image = htmlentities(trim($_FILES["image"]["name"]));
 
+		//need to get contest taxomony id so it can be assigned to post
+		$post_photo_contest_id = $_POST[ 'photo_contest_id' ];
+
 		//create post, upload image, and attach image to the post
-		psc_create_new_post($post_entrantName, $post_age, $post_title, $post_desc, $post_image);
+		psc_create_new_post($post_photo_contest_id, $post_entrantName, $post_age, $post_title, $post_desc, $post_image);
 
 
 		//Redirect browser back to photo contest submission page
@@ -142,19 +154,18 @@ function psc_process_photo_contest_submission() {
 											   $_POST[' _wp_http_referer'] );
 
 		wp_redirect( add_query_arg( array(
-						'errormessage' 	=> '1',
-						'entrantName'	=> $post_entrantName,
-						'age'			=> $post_age,
-						'title' 		=> $post_title,
-						'desc' 			=> $post_desc), $redirectaddress ) );
-		
+			'errormessage' 	=> '1',
+			'entrantName'	=> $post_entrantName,
+			'age'			=> $post_age,
+			'title' 		=> $post_title,
+			'desc' 			=> $post_desc), $redirectaddress ) );
 		exit;
 
 	}
 }
 
 //function create a new post from form submission
-function psc_create_new_post( $post_entrantName, $post_age, $post_title, $post_desc, $post_image ) {
+function psc_create_new_post( $post_photo_contest_id, $post_entrantName, $post_age, $post_title, $post_desc, $post_image ) {
 				
 	// Create post object
 	$new_contest_data = array(
@@ -166,10 +177,8 @@ function psc_create_new_post( $post_entrantName, $post_age, $post_title, $post_d
 	// Insert the post into the database
 	$new_contest_id = wp_insert_post( $new_contest_data );
 	
-	
 	//assign a custom category to the the post
-	//wp_set_object_terms( post id, term value, custom post name );
-	wp_set_post_terms( $new_contest_id, $_POST[ 'photo_contest_name' ], 'photo_contests_name');
+	wp_set_post_terms( $new_contest_id, $post_photo_contest_id, 'photo_contests_name');
 
 	//assign entrant name and age as custom fields
 	add_post_meta( $new_contest_id, 'entrantName',
