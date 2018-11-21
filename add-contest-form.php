@@ -178,7 +178,7 @@ function psc_create_new_post( $post_entrantName, $post_age, $post_title, $post_d
 	add_post_meta( $new_contest_id, 'entrantAge',
                           (int) $post_age );
 
-	add_post_meta( $new_contest_id, 'desc', 
+	add_post_meta( $new_contest_id, 'photoDescription', 
 						wp_kses( $post_desc, array() ) );
 	//upload files
 	$upload = wp_upload_bits($_FILES["image"]["name"], null, file_get_contents($_FILES["image"]["tmp_name"]));
